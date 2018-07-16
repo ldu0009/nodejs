@@ -47,4 +47,23 @@ express에서 app.get 메소드는 어떠한 경로로 들어왔을때 어떤 실행을 할 것인가 연결
 
 supervisor 명령어를 사용하면 node와 달리 파일을 수정하면 supervisor가 알아서 서버를 리부팅을 해준다.
 
+	npm install supervisor -g
+	supervisor app.js
+
 jade 문법에서 자바스크립트 문법을 사용하기 위해서 앞에 '-'를 붙여야한다.
+
+쿼리 없이 페이지를 제어하는 URL을 시멘틱 URL이다.
+
+이때까지 배운 위의 내용은 GET방식이다. query string 방식이나 simentic 방식 모두
+
+사용자의 정보를 서버로 전송할 때 쓰는 방식이 POST 방식이다.
+
+form(action='/form_receiver' method='post')이면 URL를 통해서 데이터를 전송하지 않음로 URL로 확인이 불가하다.
+
+body-parser는 POST 방식으로 전송한 데이터를 에플리케이션에서 사용할 수 있게 해준다. (정확한 명칭은 미드웨어)
+
+app.use(bodyparser.urlencoded({extended: false})); 를 추가하면 모든 요청들이 body-parser를 제일 먼저 거친 다음 라우트가 동작한다.
+
+공개가 되면 안되는 정보를 서버로 전송할때에는 POST방식으로 전송하여 URL에 정보가 표시되지 못하게 한다.
+
+전송될 데이터가 대규모이면 POST방식을 활용해야 한다.
