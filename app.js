@@ -39,7 +39,7 @@ app.get('/dynamic',function(req, res){
   </html>
 `
 res.send(output);
-}); //이렇게 하면 서버를 reboot하지 않는 이상 바뀌지 않는다. 동적
+}); //ㅣ이 방식의 코딩은 내용을 수정시 서버를 reboot해야한다. 동적
 app.get('/route',function(req, res){ //Homepage로 접속하였을때
   res.send('<h1>Hello Router!<h1> <img src="/test_image.gif">');
 });
