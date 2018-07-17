@@ -7,7 +7,8 @@ var app = exp(); //application을 리턴한다.
 
 app.locals.pretty = true; //jade로 렌더링 된 html코드를 보기 pretty하게 만들어 준다.
 
-app.set('view engine','jade'); //'jade'라는 탬플릿 엔진을 사용한다.
+app.set('view engine','jade');
+//'jade'라는 탬플릿 엔진을 사용한다.
 app.set('views','./views') //두 번째 인자에 맞는 이름의 디렉토리가 생성되있어야 한다. 기본 값은 view이다.
 
 app.use(exp.static('public')); //이 디렉토리에 html파일을 저장하면 html파일의 수정을 서버의 reboot없이 페이지에 적용 시킬 수 있다. 정적
