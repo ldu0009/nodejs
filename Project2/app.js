@@ -14,11 +14,28 @@ app.set('view engine','Jade');
 app.get('/',function(req,res){
   res.send('<h1>Main page</h1>');
 });
-app.get('/topic',function(req,res){
-  res.render('view');
-})
-app.get('/topic/new',function(req,res){
-  res.render('new');
+app.get(['/topic','/topic/:id'],function(req,res){
+  var id = req.params.id;
+  fs.readdir('data',function(err,files){
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
+    }
+
+    if(id=='new'){
+      res.render('new',{topics:files});
+    } else if(id){
+      fs.readFile('data/'+id,'utf8',function(err,data){ //encoding을 하지 않으면 Download가 된다.
+        if(err){
+          console.log(err);
+          res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
+        }
+        res.render('view',{topics:files,title: id, description: data});
+      });
+    } else{
+      res.render('view',{topics:files,title: 'Welcome', description: 'Hello, Javascript for server.'});
+    }
+  });
 });
 
 app.post('/topic',function(req,res){
@@ -27,9 +44,9 @@ app.post('/topic',function(req,res){
   fs.writeFile('data/'+title,description,function(err){
     if(err){
       console.log(err);
-      res.status(500).send('Internal Server Error');
+      res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
     }
-    res.send('Success!');
+    res.redirect('/topic/'+title);
   });
 });
 
