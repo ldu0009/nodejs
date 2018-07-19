@@ -49,12 +49,12 @@ app.get(['/topic','/topic/:id'],function(req,res){
     if(id=='new'){
       res.render('new',{topics:files});
     } else if(id){
-      fs.readFile('data/'+id,function(err,data){ //encoding을 하지 않으면 Download가 된다.
+      fs.readFile('data/'+id,'utf8',function(err,data){ //encoding을 하지 않으면 Download가 된다.
         if(err){
           console.log(err);
           res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
         }
-        res.send(data);
+        res.render('view',{topics:files,title: id, description: data});
       });
     } else{
       res.render('view',{topics:files,title: 'Welcome', description: 'Hello, Javascript for server.'});
@@ -77,7 +77,7 @@ app.post('/topic',function(req,res){
       console.log(err);
       res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
     }
-    res.redirect('Success!');
+    res.redirect('topic');
   });
 });
 
