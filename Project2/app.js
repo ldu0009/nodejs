@@ -2,6 +2,7 @@ var exp = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
 var fs = require('fs');
+var OrientDB  = require('orientjs');
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -27,6 +28,13 @@ var upload = multer({ storage: storage }); //multer라는 함수에 옵션을 �
 var fs = require('fs');
 var app = exp();
 var port = 3000;
+var server = OrientDB({
+  host:'localhost',
+  port:2424, //Basic port number of OrientDB
+  username:'root',
+  password:'4865Dla!'
+});
+var db = server.use('O2'); //server.user('Class name')
 
 app.locals.pretty = true;
 
@@ -38,27 +46,27 @@ app.set('view engine','Jade');
 app.get('/',function(req,res){
   res.render('main');
 });
-app.get(['/topic','/topic/:id'],function(req,res){
-  var id = req.params.id;
-  fs.readdir('data',function(err,files){
-    if(err){
-      console.log(err);
-      res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
-    }
-
-    if(id=='new'){
-      res.render('new',{topics:files});
-    } else if(id){
-      fs.readFile('data/'+id,'utf8',function(err,data){ //encoding을 하지 않으면 Download가 된다.
-        if(err){
-          console.log(err);
-          res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
+app.get(['/topic','/topic/:id','/topic/:id/edit'],function(req,res){
+  var sql = 'SELECT FROM topic';
+  db.query(sql).then(function(topics){
+    var sql = 'SELECT FROM topic WHERE @rid=:rid';
+    var id = req.params.id;
+    console.log(req.url.split('/'));
+    db.query(sql,{params:{rid:id}}).then(function(topic){
+      if(id=='new'){
+        res.render('new',{topics:topics,topic:topic[0]});
+      } else if(id){
+        if(req.url.split('/')[3]=='edit'){
+          db.query(sql,{params:{rid:id}}).then(function(topic){
+            res.render('edit',{topics:topics,topic:topic[0]});
+          })
+        } else{
+          res.render('view',{topics:topics,topic:topic[0]});
         }
-        res.render('view',{topics:files,title: id, description: data});
-      });
-    } else{
-      res.render('view',{topics:files,title: 'Welcome', description: 'Hello, Javascript for server.'});
-    }
+      } else{
+        res.render('view',{topics:topics});
+      }
+    });
   });
 });
 app.get('/upload',function(req,res){
@@ -69,15 +77,24 @@ app.post('/upload',upload.single('userfile'),function(req,res){
   console.log(req.file);
   res.send('Uploaded: '+req.file.filename);
 })
-app.post('/topic',function(req,res){
+app.post('/topic/new',function(req,res){
   var title = req.body.title;
   var description = req.body.description;
-  fs.writeFile('data/'+title,description,function(err){
-    if(err){
-      console.log(err);
-      res.status(500).send('Internal Server Error'); //500 서버상에 오류가 있다는 의미
-    }
-    res.redirect('topic');
+  var author = req.body.author;
+  var sql = 'INSERT INTO topic (title,description,author) VALUES (:title,:description,:author)'
+  db.query(sql,{params:{title:title,description:description,author:author}}).then(function(results){
+    res.redirect('/topic/'+encodeURIComponent(results[0]['@rid']));
+  });
+});
+app.post('/topic/:id/edit',function(req,res){
+  var id = req.params.id;
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var sql = 'UPDATE topic SET title=:title,description=:description,author=:author WHERE @rid=:rid'
+  db.query(sql,{params:{title:title,description:description,author:author,rid:id}}).then(function(results){
+    console.log(id);
+    res.redirect('/topic/'+encodeURIComponent(id));
   });
 });
 

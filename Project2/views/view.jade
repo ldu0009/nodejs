@@ -4,18 +4,29 @@ html
     meta(charset='utf-8')
   title Woky
   body
+    a(href='/') Home
     h1
       a(href='/topic') Server Side Javascript
     ui
       each topic in topics
         li
-          a(href='/topic/'+topic)= topic
+          - rid = encodeURIComponent(topic['@rid'])
+          a(href='/topic/'+rid)= topic.title
 
     artcle
-      h2= title
-      = description
+      if topic
+        h2= topic.title
+        = topic.description
+        if topic.author
+          div= 'by. ' + topic.author
+        else
+      else
+        h2 Welcome
+        | This is server side javascript tutorial.
     div
       p
       a(href='/topic/new') new
       p
-      a(href='/') Home
+      if topic
+        - rid = encodeURIComponent(topic['@rid'])
+        a(href='/topic/'+rid+'/edit') edit
