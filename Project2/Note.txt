@@ -1,3 +1,5 @@
 app.post('/profile', upload.single('avatar'), function (req, res, next))
 	upload.single('avatar') - callback function이 실행되기 전에 실행하는 미들웨어. 사용자가 전송한 데이터에서 파일이 포함되어 있다면 그 파일을 가공해서 req객체에 file이라는 properties를 암시적으로 추가하도록 약속되있는 미들웨어. 인자는 사용자가 전송할 파일을 담은 전송자 name을 설정해주어야 한다.
 properties란 class member 변수이다. (Java에서 사용하는 단어)
+패스워드가 소스에 있으면 안되고 따로 파일을 만들어 보안을 지켜야함.
+jade에서 -뒤에있는 코드를 자바스크립트로 처리
